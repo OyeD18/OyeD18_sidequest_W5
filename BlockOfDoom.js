@@ -2,7 +2,7 @@ class DoomBlock {
   constructor(x, startY, speed, w, h) {
     this.x = x;
     this.y = startY;
-    this.s = speed;
+    this.speed = speed;
     this.w = w;
     this.h = h;
   }
@@ -11,7 +11,7 @@ class DoomBlock {
     this.y += this.speed;
   }
 
-  draw(cam) {
+  draw() {
     fill(0);
     noStroke();
     rect(this.x - cam.x, this.y - cam.y, this.w, this.h);

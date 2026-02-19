@@ -16,6 +16,8 @@ Learning goals:
 - Explore scalable project architecture for larger games
 */
 
+let currentState = "play";
+
 const VIEW_W = 800;
 const VIEW_H = 480;
 
@@ -23,9 +25,9 @@ let allLevelsData;
 let levelIndex = 0;
 
 let level;
+let doomBlock;
 let player;
 let cam;
-let doomBlock;
 
 function preload() {
   allLevelsData = loadJSON("levels.json"); // levels.json beside index.html [web:122]
@@ -38,7 +40,7 @@ function setup() {
 
   cam = new Camera2D(width, height);
   loadLevel(levelIndex);
-  doomBlock = new doomBlock(0, -200, 0.5, level.w, 50);
+  doomBlock = new DoomBlock(0, -500, 0.05, level.w, 500);
 }
 
 function loadLevel(i) {
@@ -53,13 +55,24 @@ function loadLevel(i) {
 }
 
 function draw() {
+  if (currentState === "play") {
+    runGame();
+  } else if (currentState === "dead") {
+    Dead.draw();
+  }
+}
+function run() {
   // --- game state ---
   player.update(level);
   //doom
   doomBlock.update();
   const dist = doomBlock.distanceToBlob(player);
-  const maxDistance = 500;
-  const panicWobble = 50;
+  if (dist <= 0) {
+    currentState = "dead";
+  }
+
+  const maxDistance = 2000;
+  const panicWobble = 5;
   const panicPoints = 33;
   const panicFreq = 1.9;
   const panicTSpeed = 0.1;
@@ -99,7 +112,7 @@ function draw() {
   // --- draw ---
   cam.begin();
   level.drawWorld();
-  doomBlock.draw(cam);
+  doomBlock.draw();
   player.draw(level.theme.blob);
   cam.end();
 
@@ -129,5 +142,8 @@ function keyPressed() {
   if (key === " " || key === "W" || key === "w" || keyCode === UP_ARROW) {
     player.tryJump();
   }
-  if (key === "r" || key === "R") loadLevel(levelIndex);
+  if (key === "r" || key === "R") {
+    currentState = "play";
+    loadLevel(levelIndex);
+  }
 }
