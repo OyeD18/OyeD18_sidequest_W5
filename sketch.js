@@ -25,6 +25,7 @@ let levelIndex = 0;
 let level;
 let player;
 let cam;
+let doomBlock;
 
 function preload() {
   allLevelsData = loadJSON("levels.json"); // levels.json beside index.html [web:122]
@@ -37,6 +38,7 @@ function setup() {
 
   cam = new Camera2D(width, height);
   loadLevel(levelIndex);
+  doomBlock = new doomBlock(0, -200, 0.5, level.w, 50);
 }
 
 function loadLevel(i) {
@@ -53,6 +55,20 @@ function loadLevel(i) {
 function draw() {
   // --- game state ---
   player.update(level);
+  //doom
+  doomBlock.update();
+  const dist = doomBlock.distanceToBlob(player);
+  const maxDistance = 500;
+  const panicWobble = 50;
+  const panicPoints = 33;
+  const panicFreq = 1.9;
+  const panicTSpeed = 0.1;
+
+  const tRatio = constrain(1 - dist / maxDistance, 0, 1); // 0 = far, 1 = touching
+  player.wobble = lerp(7, panicWobble, tRatio);
+  player.points = lerp(48, panicPoints, tRatio);
+  player.wobbleFreq = lerp(0.9, panicFreq, tRatio);
+  player.tSpeed = lerp(0.01, panicTSpeed, tRatio);
 
   // Finish switch
   if (level.finish) {
@@ -83,6 +99,7 @@ function draw() {
   // --- draw ---
   cam.begin();
   level.drawWorld();
+  doomBlock.draw(cam);
   player.draw(level.theme.blob);
   cam.end();
 
