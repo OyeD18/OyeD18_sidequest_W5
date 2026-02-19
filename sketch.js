@@ -54,6 +54,22 @@ function draw() {
   // --- game state ---
   player.update(level);
 
+  // Finish switch
+  if (level.finish) {
+    const playerBox = {
+      x: player.x - player.r,
+      y: player.y - player.r,
+      w: player.r * 2,
+      h: player.r * 2,
+    };
+
+    if (BlobPlayer.overlap(playerBox, level.finish)) {
+      levelIndex = (levelIndex + 1) % allLevelsData.levels.length;
+      loadLevel(levelIndex);
+      return;
+    }
+  }
+
   // Fall death → respawn
   if (player.y - player.r > level.deathY) {
     loadLevel(levelIndex);
@@ -61,8 +77,7 @@ function draw() {
   }
 
   // --- view state (data-driven smoothing) ---
-  cam.followSideScrollerX(player.x, level.camLerp);
-  cam.y = 0;
+  cam.follow(player.x, player.y, level.camLerp);
   cam.clampToWorld(level.w, level.h);
 
   // --- draw ---

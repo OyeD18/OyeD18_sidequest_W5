@@ -16,11 +16,14 @@ class WorldLevel {
 
     // World size + death line
     this.w = levelJson.world?.w ?? 2400;
-    this.h = levelJson.world?.h ?? 360;
-    this.deathY = levelJson.world?.deathY ?? this.h + 200;
+    this.h = levelJson.world?.h ?? 1000;
+    this.deathY = levelJson.world?.deathY ?? this.h + 1000;
 
     // Start
     this.start = Object.assign({ x: 80, y: 220, r: 26 }, levelJson.start ?? {});
+
+    // Finidh
+    this.finish = levelJson.finish ?? null;
 
     // Platforms
     this.platforms = (levelJson.platforms ?? []).map(
@@ -28,14 +31,19 @@ class WorldLevel {
     );
   }
 
-drawWorld() {
-  background(this.theme.bg);
-  push();
-  rectMode(CORNER);          // critical: undo any global rectMode(CENTER) [web:230]
-  noStroke();
-  fill(this.theme.platform);
+  drawWorld() {
+    background(this.theme.bg);
+    push();
+    rectMode(CORNER); // critical: undo any global rectMode(CENTER) [web:230]
+    noStroke();
+    fill(this.theme.platform);
 
-  for (const p of this.platforms) rect(p.x, p.y, p.w, p.h); // x,y = top-left [web:234]
-  pop();
-}
+    for (const p of this.platforms) rect(p.x, p.y, p.w, p.h); // x,y = top-left [web:234]
+
+    if (this.finish) {
+      fill(110, 58, 7);
+      rect(this.finish.x, this.finish.y, this.finish.w, this.finish.h, 5);
+    }
+    pop();
+  }
 }

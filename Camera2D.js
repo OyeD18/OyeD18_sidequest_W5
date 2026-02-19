@@ -6,9 +6,14 @@ class Camera2D {
     this.y = 0;
   }
 
-  followSideScrollerX(targetX, lerpAmt) {
-    const desired = targetX - this.viewW / 2;
-    this.x = lerp(this.x, desired, lerpAmt);
+  follow(targetX, targetY, lerpAmt) {
+    const yOffset = this.viewH * 0.8; //key Y down
+
+    const desiredX = targetX - this.viewW / 2;
+    const desiredY = targetY - yOffset;
+
+    this.x = lerp(this.x, desiredX, lerpAmt);
+    this.y = lerp(this.y, desiredY, lerpAmt);
   }
 
   clampToWorld(worldW, worldH) {
