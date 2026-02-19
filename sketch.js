@@ -40,7 +40,8 @@ function setup() {
 
   cam = new Camera2D(width, height);
   loadLevel(levelIndex);
-  doomBlock = new DoomBlock(0, -500, 0.05, level.w, 500);
+
+  doomBlock = new DoomBlock(0, -800, 0.5, level.w, 500);
 }
 
 function loadLevel(i) {
@@ -56,7 +57,7 @@ function loadLevel(i) {
 
 function draw() {
   if (currentState === "play") {
-    runGame();
+    run();
   } else if (currentState === "dead") {
     Dead.draw();
   }
@@ -67,17 +68,21 @@ function run() {
   //doom
   doomBlock.update();
   const dist = doomBlock.distanceToBlob(player);
+
   if (dist <= 0) {
     currentState = "dead";
+    return;
   }
 
   const maxDistance = 2000;
-  const panicWobble = 5;
+  const panicWobble = 25;
   const panicPoints = 33;
   const panicFreq = 1.9;
   const panicTSpeed = 0.1;
 
-  const tRatio = constrain(1 - dist / maxDistance, 0, 1); // 0 = far, 1 = touching
+  let tRatio = constrain(1 - dist / maxDistance, 0, 1); // 0 = far, 1 = touching
+  tRatio = pow(tRatio, 2);
+
   player.wobble = lerp(7, panicWobble, tRatio);
   player.points = lerp(48, panicPoints, tRatio);
   player.wobbleFreq = lerp(0.9, panicFreq, tRatio);
@@ -95,13 +100,14 @@ function run() {
     if (BlobPlayer.overlap(playerBox, level.finish)) {
       levelIndex = (levelIndex + 1) % allLevelsData.levels.length;
       loadLevel(levelIndex);
+      doomBlock = new DoomBlock(0, -800, 0.5, level.w, 500);
       return;
     }
   }
 
   // Fall death → respawn
   if (player.y - player.r > level.deathY) {
-    loadLevel(levelIndex);
+    player.spawnFromLevel(level);
     return;
   }
 
@@ -112,7 +118,7 @@ function run() {
   // --- draw ---
   cam.begin();
   level.drawWorld();
-  doomBlock.draw();
+  doomBlock.draw(cam);
   player.draw(level.theme.blob);
   cam.end();
 
@@ -139,11 +145,17 @@ function run() {
 }
 
 function keyPressed() {
-  if (key === " " || key === "W" || key === "w" || keyCode === UP_ARROW) {
-    player.tryJump();
+  if (currentState === "play") {
+    if (key === " " || key === "W" || key === "w" || keyCode === UP_ARROW) {
+      player.tryJump();
+    }
   }
-  if (key === "r" || key === "R") {
-    currentState = "play";
-    loadLevel(levelIndex);
+
+  if (currentState === "dead") {
+    if (key === "r" || key === "R") {
+      currentState = "play";
+      loadLevel(levelIndex);
+      doomBlock = new DoomBlock(0, -800, 0.5, level.w, 500);
+    }
   }
 }

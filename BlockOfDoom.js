@@ -11,13 +11,15 @@ class DoomBlock {
     this.y += this.speed;
   }
 
-  draw() {
+  draw(cam) {
     fill(0);
     noStroke();
     rect(this.x - cam.x, this.y - cam.y, this.w, this.h);
   }
 
   distanceToBlob(blob) {
-    return this.y - (blob.y + blob.r);
+    const blockBottom = this.y + this.h;
+    const blobTop = blob.y - blob.r;
+    return blobTop - blockBottom;
   }
 }
