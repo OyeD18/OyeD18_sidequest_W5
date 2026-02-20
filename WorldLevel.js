@@ -3,7 +3,7 @@ class WorldLevel {
     this.name = levelJson.name ?? "Level";
 
     this.theme = Object.assign(
-      { bg: "#F0F0F0", platform: "#C8C8C8", blob: "#1478FF" },
+      { bg: "#4e4e4e", platform: "#7e2f2f", blob: "#e72e2ed8" },
       levelJson.theme ?? {},
     );
 

@@ -20,9 +20,9 @@ class BlobPlayer {
     // wobble visuals
     this.t = 0;
     this.tSpeed = 0.01;
-    this.wobble = 7;
-    this.points = 48;
-    this.wobbleFreq = 0.9;
+    this.wobble = 20;
+    this.points = 4;
+    this.wobbleFreq = 0.1;
   }
 
   spawnFromLevel(level) {
@@ -103,7 +103,7 @@ class BlobPlayer {
 
   draw(colHex) {
     fill(color(colHex));
-    noStroke();
+    stroke(0.1);
     beginShape();
     for (let i = 0; i < this.points; i++) {
       const a = (i / this.points) * TAU;
